@@ -1,0 +1,90 @@
+{
+  "contract_version": "1.0",
+  "run_id": "run_20260805_060514_70b7a1",
+  "correlation_id": "corr_EC_016_a3dddb",
+  "case_id": "EC_016",
+  "order_id": "a88edef387e2a7e457695664bf0ddfc0",
+  "status": "action_required",
+  "primary_issue": "late_delivery_logistics",
+  "policy_decision": {
+    "confidence_score": 1.0,
+    "confidence_explanation": "Giao hàng sau dự kiến do đơn vị vận chuyển chậm",
+    "matched_rule_priority": 4,
+    "primary_issue": "late_delivery_logistics",
+    "case_status": "action_required",
+    "root_causes": [
+      "CARRIER_DELIVERED_AFTER_ESTIMATE"
+    ],
+    "responsible_parties": [
+      {
+        "party_type": "logistics_provider",
+        "party_id": "LOGISTICS_PROVIDER"
+      }
+    ],
+    "recommended_refund_brl": 14.52,
+    "currency": "BRL",
+    "resolution_actions": [
+      "refund_freight"
+    ],
+    "excluded_higher_priority_rules": [
+      {
+        "priority": 1,
+        "reason_code": "ORDER_STATUS_NOT_CANCELED"
+      },
+      {
+        "priority": 2,
+        "reason_code": "ORDER_STATUS_NOT_UNAVAILABLE"
+      },
+      {
+        "priority": 3,
+        "reason_code": "NO_SELLER_HANDOFF_AFTER_LIMIT"
+      }
+    ],
+    "selected_evidence_ids": [
+      "order:a88edef387e2a7e457695664bf0ddfc0",
+      "item:a88edef387e2a7e457695664bf0ddfc0:1",
+      "seller:9646c3513289980f17226a2fc4720dbd",
+      "payment:a88edef387e2a7e457695664bf0ddfc0:1",
+      "policy:CARRIER_DELIVERED_AFTER_ESTIMATE"
+    ]
+  },
+  "evidence": {
+    "entity_candidates": {
+      "order_ids": [
+        "a88edef387e2a7e457695664bf0ddfc0"
+      ],
+      "seller_ids": [
+        "9646c3513289980f17226a2fc4720dbd"
+      ],
+      "item_ids": [
+        "a88edef387e2a7e457695664bf0ddfc0:1"
+      ],
+      "payment_ids": [
+        "a88edef387e2a7e457695664bf0ddfc0:1"
+      ]
+    },
+    "evidence_candidates": [
+      "order:a88edef387e2a7e457695664bf0ddfc0",
+      "item:a88edef387e2a7e457695664bf0ddfc0:1",
+      "seller:9646c3513289980f17226a2fc4720dbd",
+      "payment:a88edef387e2a7e457695664bf0ddfc0:1",
+      "policy:CARRIER_DELIVERED_AFTER_ESTIMATE"
+    ]
+  },
+  "warnings": [],
+  "errors": [],
+  "verification": {
+    "verdict": "PASS",
+    "passed_checks": [
+      "schema",
+      "identity",
+      "entities",
+      "evidence",
+      "financials",
+      "policy",
+      "limits",
+      "determinism"
+    ],
+    "failed_checks": []
+  }
+}

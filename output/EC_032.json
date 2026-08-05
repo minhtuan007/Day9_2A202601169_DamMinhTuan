@@ -1,0 +1,96 @@
+{
+  "contract_version": "1.0",
+  "run_id": "run_20260805_060514_70b7a1",
+  "correlation_id": "corr_EC_032_54ca4c",
+  "case_id": "EC_032",
+  "order_id": "c4dad201936ed30eef3c94fafa59ed6e",
+  "status": "no_action",
+  "primary_issue": "unsupported_late_claim",
+  "policy_decision": {
+    "confidence_score": 1.0,
+    "confidence_explanation": "Đơn hàng giao đúng hạn và thanh toán khớp, không có cơ sở hoàn tiền",
+    "matched_rule_priority": 6,
+    "primary_issue": "unsupported_late_claim",
+    "case_status": "no_action",
+    "root_causes": [
+      "DELIVERY_WITHIN_ESTIMATE"
+    ],
+    "responsible_parties": [],
+    "recommended_refund_brl": 0.0,
+    "currency": "BRL",
+    "resolution_actions": [
+      "reject_late_refund"
+    ],
+    "excluded_higher_priority_rules": [
+      {
+        "priority": 1,
+        "reason_code": "ORDER_STATUS_NOT_CANCELED"
+      },
+      {
+        "priority": 2,
+        "reason_code": "ORDER_STATUS_NOT_UNAVAILABLE"
+      },
+      {
+        "priority": 3,
+        "reason_code": "DELIVERED_CUSTOMER_DATE_NOT_AFTER_ESTIMATE"
+      },
+      {
+        "priority": 4,
+        "reason_code": "DELIVERED_CUSTOMER_DATE_NOT_AFTER_ESTIMATE"
+      },
+      {
+        "priority": 5,
+        "reason_code": "PAYMENT_COUNT_LESS_THAN_TWO"
+      }
+    ],
+    "selected_evidence_ids": [
+      "order:c4dad201936ed30eef3c94fafa59ed6e",
+      "item:c4dad201936ed30eef3c94fafa59ed6e:1",
+      "item:c4dad201936ed30eef3c94fafa59ed6e:2",
+      "seller:1a932caad4f9d804097d7f8e615baed1",
+      "payment:c4dad201936ed30eef3c94fafa59ed6e:1",
+      "policy:DELIVERY_WITHIN_ESTIMATE"
+    ]
+  },
+  "evidence": {
+    "entity_candidates": {
+      "order_ids": [
+        "c4dad201936ed30eef3c94fafa59ed6e"
+      ],
+      "seller_ids": [
+        "1a932caad4f9d804097d7f8e615baed1"
+      ],
+      "item_ids": [
+        "c4dad201936ed30eef3c94fafa59ed6e:1",
+        "c4dad201936ed30eef3c94fafa59ed6e:2"
+      ],
+      "payment_ids": [
+        "c4dad201936ed30eef3c94fafa59ed6e:1"
+      ]
+    },
+    "evidence_candidates": [
+      "order:c4dad201936ed30eef3c94fafa59ed6e",
+      "item:c4dad201936ed30eef3c94fafa59ed6e:1",
+      "item:c4dad201936ed30eef3c94fafa59ed6e:2",
+      "seller:1a932caad4f9d804097d7f8e615baed1",
+      "payment:c4dad201936ed30eef3c94fafa59ed6e:1",
+      "policy:DELIVERY_WITHIN_ESTIMATE"
+    ]
+  },
+  "warnings": [],
+  "errors": [],
+  "verification": {
+    "verdict": "PASS",
+    "passed_checks": [
+      "schema",
+      "identity",
+      "entities",
+      "evidence",
+      "financials",
+      "policy",
+      "limits",
+      "determinism"
+    ],
+    "failed_checks": []
+  }
+}

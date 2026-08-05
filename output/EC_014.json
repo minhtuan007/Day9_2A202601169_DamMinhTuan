@@ -1,0 +1,94 @@
+{
+  "contract_version": "1.0",
+  "run_id": "run_20260805_060514_70b7a1",
+  "correlation_id": "corr_EC_014_bc634f",
+  "case_id": "EC_014",
+  "order_id": "b93b079468bdf6a20fd54cf45d1e03b6",
+  "status": "no_action",
+  "primary_issue": "valid_split_payment",
+  "policy_decision": {
+    "confidence_score": 1.0,
+    "confidence_explanation": "Thanh toán chia nhỏ hợp lệ đã đối sánh thành công",
+    "matched_rule_priority": 5,
+    "primary_issue": "valid_split_payment",
+    "case_status": "no_action",
+    "root_causes": [
+      "MULTIPLE_PAYMENTS_RECONCILED"
+    ],
+    "responsible_parties": [],
+    "recommended_refund_brl": 0.0,
+    "currency": "BRL",
+    "resolution_actions": [
+      "explain_valid_split_payment"
+    ],
+    "excluded_higher_priority_rules": [
+      {
+        "priority": 1,
+        "reason_code": "ORDER_STATUS_NOT_CANCELED"
+      },
+      {
+        "priority": 2,
+        "reason_code": "ORDER_STATUS_NOT_UNAVAILABLE"
+      },
+      {
+        "priority": 3,
+        "reason_code": "DELIVERED_CUSTOMER_DATE_NOT_AFTER_ESTIMATE"
+      },
+      {
+        "priority": 4,
+        "reason_code": "DELIVERED_CUSTOMER_DATE_NOT_AFTER_ESTIMATE"
+      }
+    ],
+    "selected_evidence_ids": [
+      "order:b93b079468bdf6a20fd54cf45d1e03b6",
+      "item:b93b079468bdf6a20fd54cf45d1e03b6:1",
+      "seller:cc419e0650a3c5ba77189a1882b7556a",
+      "payment:b93b079468bdf6a20fd54cf45d1e03b6:1",
+      "payment:b93b079468bdf6a20fd54cf45d1e03b6:2",
+      "policy:DELIVERY_WITHIN_ESTIMATE",
+      "policy:MULTIPLE_PAYMENTS_RECONCILED"
+    ]
+  },
+  "evidence": {
+    "entity_candidates": {
+      "order_ids": [
+        "b93b079468bdf6a20fd54cf45d1e03b6"
+      ],
+      "seller_ids": [
+        "cc419e0650a3c5ba77189a1882b7556a"
+      ],
+      "item_ids": [
+        "b93b079468bdf6a20fd54cf45d1e03b6:1"
+      ],
+      "payment_ids": [
+        "b93b079468bdf6a20fd54cf45d1e03b6:1",
+        "b93b079468bdf6a20fd54cf45d1e03b6:2"
+      ]
+    },
+    "evidence_candidates": [
+      "order:b93b079468bdf6a20fd54cf45d1e03b6",
+      "item:b93b079468bdf6a20fd54cf45d1e03b6:1",
+      "seller:cc419e0650a3c5ba77189a1882b7556a",
+      "payment:b93b079468bdf6a20fd54cf45d1e03b6:1",
+      "payment:b93b079468bdf6a20fd54cf45d1e03b6:2",
+      "policy:DELIVERY_WITHIN_ESTIMATE",
+      "policy:MULTIPLE_PAYMENTS_RECONCILED"
+    ]
+  },
+  "warnings": [],
+  "errors": [],
+  "verification": {
+    "verdict": "PASS",
+    "passed_checks": [
+      "schema",
+      "identity",
+      "entities",
+      "evidence",
+      "financials",
+      "policy",
+      "limits",
+      "determinism"
+    ],
+    "failed_checks": []
+  }
+}

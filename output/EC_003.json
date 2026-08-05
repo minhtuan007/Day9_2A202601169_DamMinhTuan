@@ -1,0 +1,77 @@
+{
+  "contract_version": "1.0",
+  "run_id": "run_20260805_060514_70b7a1",
+  "correlation_id": "corr_EC_003_38ca26",
+  "case_id": "EC_003",
+  "order_id": "71303d7e93b399f5bcd537d124c0bcfa",
+  "status": "action_required",
+  "primary_issue": "canceled_order_paid",
+  "policy_decision": {
+    "confidence_score": 1.0,
+    "confidence_explanation": "Đơn hàng canceled đã thu tiền thanh toán",
+    "matched_rule_priority": 1,
+    "primary_issue": "canceled_order_paid",
+    "case_status": "action_required",
+    "root_causes": [
+      "ORDER_CANCELED_AFTER_PAYMENT"
+    ],
+    "responsible_parties": [
+      {
+        "party_type": "platform",
+        "party_id": "OLIST_PLATFORM"
+      }
+    ],
+    "recommended_refund_brl": 109.34,
+    "currency": "BRL",
+    "resolution_actions": [
+      "issue_full_refund"
+    ],
+    "excluded_higher_priority_rules": [],
+    "selected_evidence_ids": [
+      "order:71303d7e93b399f5bcd537d124c0bcfa",
+      "item:71303d7e93b399f5bcd537d124c0bcfa:1",
+      "seller:25e6ffe976bd75618accfe16cefcbd0d",
+      "payment:71303d7e93b399f5bcd537d124c0bcfa:1",
+      "policy:ORDER_CANCELED_AFTER_PAYMENT"
+    ]
+  },
+  "evidence": {
+    "entity_candidates": {
+      "order_ids": [
+        "71303d7e93b399f5bcd537d124c0bcfa"
+      ],
+      "seller_ids": [
+        "25e6ffe976bd75618accfe16cefcbd0d"
+      ],
+      "item_ids": [
+        "71303d7e93b399f5bcd537d124c0bcfa:1"
+      ],
+      "payment_ids": [
+        "71303d7e93b399f5bcd537d124c0bcfa:1"
+      ]
+    },
+    "evidence_candidates": [
+      "order:71303d7e93b399f5bcd537d124c0bcfa",
+      "item:71303d7e93b399f5bcd537d124c0bcfa:1",
+      "seller:25e6ffe976bd75618accfe16cefcbd0d",
+      "payment:71303d7e93b399f5bcd537d124c0bcfa:1",
+      "policy:ORDER_CANCELED_AFTER_PAYMENT"
+    ]
+  },
+  "warnings": [],
+  "errors": [],
+  "verification": {
+    "verdict": "PASS",
+    "passed_checks": [
+      "schema",
+      "identity",
+      "entities",
+      "evidence",
+      "financials",
+      "policy",
+      "limits",
+      "determinism"
+    ],
+    "failed_checks": []
+  }
+}

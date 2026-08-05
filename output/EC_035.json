@@ -1,0 +1,93 @@
+{
+  "contract_version": "1.0",
+  "run_id": "run_20260805_060514_70b7a1",
+  "correlation_id": "corr_EC_035_70e66b",
+  "case_id": "EC_035",
+  "order_id": "2478ddd1d1395639b71cf0d498d8dbf6",
+  "status": "no_action",
+  "primary_issue": "unsupported_late_claim",
+  "policy_decision": {
+    "confidence_score": 1.0,
+    "confidence_explanation": "Đơn hàng giao đúng hạn và thanh toán khớp, không có cơ sở hoàn tiền",
+    "matched_rule_priority": 6,
+    "primary_issue": "unsupported_late_claim",
+    "case_status": "no_action",
+    "root_causes": [
+      "DELIVERY_WITHIN_ESTIMATE"
+    ],
+    "responsible_parties": [],
+    "recommended_refund_brl": 0.0,
+    "currency": "BRL",
+    "resolution_actions": [
+      "reject_late_refund"
+    ],
+    "excluded_higher_priority_rules": [
+      {
+        "priority": 1,
+        "reason_code": "ORDER_STATUS_NOT_CANCELED"
+      },
+      {
+        "priority": 2,
+        "reason_code": "ORDER_STATUS_NOT_UNAVAILABLE"
+      },
+      {
+        "priority": 3,
+        "reason_code": "DELIVERED_CUSTOMER_DATE_NOT_AFTER_ESTIMATE"
+      },
+      {
+        "priority": 4,
+        "reason_code": "DELIVERED_CUSTOMER_DATE_NOT_AFTER_ESTIMATE"
+      },
+      {
+        "priority": 5,
+        "reason_code": "PAYMENT_COUNT_LESS_THAN_TWO"
+      }
+    ],
+    "selected_evidence_ids": [
+      "order:2478ddd1d1395639b71cf0d498d8dbf6",
+      "item:2478ddd1d1395639b71cf0d498d8dbf6:1",
+      "seller:4e17c65a516f69d023a2ae78b84f28d6",
+      "payment:2478ddd1d1395639b71cf0d498d8dbf6:1",
+      "policy:DELIVERY_WITHIN_ESTIMATE"
+    ]
+  },
+  "evidence": {
+    "entity_candidates": {
+      "order_ids": [
+        "2478ddd1d1395639b71cf0d498d8dbf6"
+      ],
+      "seller_ids": [
+        "4e17c65a516f69d023a2ae78b84f28d6"
+      ],
+      "item_ids": [
+        "2478ddd1d1395639b71cf0d498d8dbf6:1"
+      ],
+      "payment_ids": [
+        "2478ddd1d1395639b71cf0d498d8dbf6:1"
+      ]
+    },
+    "evidence_candidates": [
+      "order:2478ddd1d1395639b71cf0d498d8dbf6",
+      "item:2478ddd1d1395639b71cf0d498d8dbf6:1",
+      "seller:4e17c65a516f69d023a2ae78b84f28d6",
+      "payment:2478ddd1d1395639b71cf0d498d8dbf6:1",
+      "policy:DELIVERY_WITHIN_ESTIMATE"
+    ]
+  },
+  "warnings": [],
+  "errors": [],
+  "verification": {
+    "verdict": "PASS",
+    "passed_checks": [
+      "schema",
+      "identity",
+      "entities",
+      "evidence",
+      "financials",
+      "policy",
+      "limits",
+      "determinism"
+    ],
+    "failed_checks": []
+  }
+}

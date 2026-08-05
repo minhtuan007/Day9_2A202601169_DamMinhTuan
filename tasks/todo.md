@@ -1,41 +1,54 @@
-## Task 1: Implement Data Loader for Payment & Order Items
-- [x] Xây dựng mô-đun tải dữ liệu `OlistDataLoader` trong `utils/data_loader.py` và viết unit test tương ứng trong `tests/test_data_loader.py`.
-  - Acceptance criteria:
-    - [x] Có hàm tải và lọc riêng biệt rành mạch: `get_order_payments(order_id)` và `get_order_items(order_id)` (hoặc tương tự).
-    - [x] Mọi trường ID và giá trị được trả ra an toàn không làm biến đổi hay hư hại kiểu dữ liệu gốc (không tự ý chuyển ID sang int).
-    - [x] Không join 2 bảng 1:N với nhau, trả ra hai danh sách riêng biệt.
-    - [x] Có thể dựng cơ chế in-memory index theo `order_id` để việc tìm kiếm diễn ra trong O(1) sau lần nạp file đầu tiên mà tuyệt đối không thay đổi hay ghi file vào thư mục `data/`.
-  - Verification:
-    - [x] Lệnh kiểm thử PASS: `python -m unittest tests/test_data_loader.py -v`
-  - Files:
-    - `utils/data_loader.py`
-    - `tests/test_data_loader.py`
-  - Estimated scope: Small (2 files)
+# Todo Checklist: Full Multi-Agent A2A System Implementation
 
-## Task 2: Implement Core Payment Agent Logic & Standard Reconciliation
-- [x] Xây dựng lớp/hàm chủ lực cho Payment Agent tại `agents/payment_agent.py` xử lý các đơn hàng tiêu chuẩn (đáp ứng đúng theo schema của `AgentTask` và trả ra `AgentResult`).
+## Phase 1: Expand DataLoader & Order-Seller Agent
+- [x] Mở rộng `OlistDataLoader` trong `utils/data_loader.py` (thêm hàm tra cứu `get_order`, `get_seller`, `get_product` với O(1) cache).
+  - [x] Viết bổ sung test case trong `tests/test_data_loader.py` và chạy PASS.
+- [x] Viết failing unit tests (RED phase) cho `OrderSellerAgent` trong `tests/test_order_seller_agent.py`.
+- [x] Triển khai logic `OrderSellerAgent` trong `agents/order_seller_agent.py` (GREEN phase).
   - Acceptance criteria:
-    - [x] Tính `payment_count` theo số row, không theo installments.
-    - [x] Tính `payment_total_brl`, `item_total_brl_check`, `freight_total_brl_check`, `expected_total_brl`, và `difference_brl` bằng `Decimal` với quy tắc `ROUND_HALF_UP`.
-    - [x] Quyết định gán `is_reconciled=True` khi `difference_brl <= 0.10` và `is_split_payment=True` khi có từ 2 payment rows trở lên.
-    - [x] Sinh đúng các candidate: `payment_ids` dạng `<order_id>:<payment_sequential>` và `evidence_candidates` dạng `payment:<order_id>:<payment_sequential>`.
-  - Verification:
-    - [x] Lệnh kiểm thử PASS: `python -m unittest tests/test_payment_agent.py -v`
-  - Files:
-    - `agents/payment_agent.py`
-    - `tests/test_payment_agent.py`
-  - Estimated scope: Medium (2 files)
+    - [x] Tìm đúng order, xác nhận seller, trả về timestamp.
+    - [x] Tính `item_total_brl` và `freight_total_brl` chuẩn xác bằng `Decimal`.
+    - [x] Phát hiện seller giao trễ cho bưu cục (`carrier_date > shipping_limit_date`).
+  - Verification: `python -m unittest tests/test_order_seller_agent.py -v`
 
-## Task 3: Implement Edge Cases & Error Handling for Payment Agent
-- [x] Bổ sung cơ chế xử lý hoàn chỉnh các trường hợp biên và báo cáo lỗi có cấu trúc (structured error detail) vào `agents/payment_agent.py`.
+## Phase 2: Delivery Agent
+- [x] Viết failing unit tests (RED phase) cho `DeliveryAgent` trong `tests/test_delivery_agent.py`.
+- [x] Triển khai logic `DeliveryAgent` trong `agents/delivery_agent.py` (GREEN phase).
   - Acceptance criteria:
-    - [x] Trường hợp order không có payment row: Trả `payments=[]`, `payment_count=0`, totals = `0.00`, `status="success"`, không bịa payment ID hay evidence ID.
-    - [x] Trường hợp `payment_sequential` bị trùng lặp trong một order: Trả `status="data_error"`, kèm error detail rõ ràng.
-    - [x] Trường hợp tiền thanh toán âm hoặc sai format không parse được thành số: Trả `status="data_error"`.
-    - [x] Trường hợp sai lệch/xung đột dữ liệu nghiêm trọng theo hợp đồng đối soát: Trả `status="conflict"`.
-  - Verification:
-    - [x] Lệnh kiểm thử PASS cho toàn bộ test cases cơ bản và biên: `python -m unittest discover -s tests -v`
-  - Files:
-    - `agents/payment_agent.py`
-    - `tests/test_payment_agent.py`
-  - Estimated scope: Medium (2 files)
+    - [x] So sánh ngày giao khách thực tế (`actual > estimate`).
+    - [x] Phái quyết `attribution_candidate`: `seller` (nếu có item giao bưu cục muộn), `logistics_provider` (nếu mọi item giao bưu cục đúng hạn), `none` (nếu giao đúng hạn khách), `not_applicable` hoặc `unknown`.
+  - Verification: `python -m unittest tests/test_delivery_agent.py -v`
+
+## Phase 3: Policy Agent
+- [x] Viết failing unit tests (RED phase) cho `PolicyAgent` trong `tests/test_policy_agent.py`.
+- [x] Triển khai logic `PolicyAgent` trong `agents/policy_agent.py` (GREEN phase).
+  - Acceptance criteria:
+    - [x] Nhận `EvidenceBundle`, áp dụng tuần tự 6 quy tắc thuộc `EC_POLICY_V1` từ ưu tiên 1 đến 6.
+    - [x] Xuất ra quyết định chứa `primary_issue`, `recommended_refund_brl`, `resolution_actions`, và lý do loại các rule ưu tiên cao hơn `excluded_higher_priority_rules`.
+    - [x] Trả confidence `1.0` khi đủ critical facts, báo lỗi `UNCLASSIFIED_CASE` nếu không khớp rule nào.
+  - Verification: `python -m unittest tests/test_policy_agent.py -v`
+
+## Phase 4: Verifier Agent
+- [x] Viết failing unit tests (RED phase) cho `VerifierAgent` trong `tests/test_verifier_agent.py`.
+- [x] Triển khai logic `VerifierAgent` trong `agents/verifier_agent.py` (GREEN phase).
+  - Acceptance criteria:
+    - [x] Kiểm định 8 trục: `schema`, `identity`, `entities`, `evidence`, `financials`, `policy`, `limits`, `determinism`.
+    - [x] Đảm bảo giới hạn đầu ra: tối đa 5 entity IDs mỗi loại, 10 evidence IDs, loại trùng và có thứ tự ổn định.
+    - [x] Trả ra phán quyết `verdict`: `"PASS"` hoặc `"FAIL"`.
+  - Verification: `python -m unittest tests/test_verifier_agent.py -v`
+
+## Phase 5: Coordinator Agent
+- [x] Viết failing unit tests (RED phase) cho `CoordinatorAgent` trong `tests/test_coordinator.py`.
+- [x] Triển khai logic `CoordinatorAgent` trong `agents/coordinator.py` (GREEN phase).
+  - Acceptance criteria:
+    - [x] Quản lý state machine: `RECEIVED -> VALIDATED -> DISPATCHED -> COLLECTED -> POLICY_DECIDED -> DRAFTED -> VERIFYING -> VERIFIED -> WRITTEN`.
+    - [x] Điều phối gửi `AgentTask` cho 3 domain agents, tập hợp `EvidenceBundle`.
+    - [x] Bẫy lỗi đối chiếu tài chính chéo, gửi Policy Agent và Verifier Agent, chỉ cho phép ghi output khi Verifier trả `PASS`.
+  - Verification: `python -m unittest tests/test_coordinator.py -v`
+
+## Phase 6: Batch Pipeline Integration & Execution (`main.py`)
+- [x] Triển khai logic orchestrator trong `main.py` để duyệt 50 file từ `input/EC_001.json` đến `input/EC_050.json`.
+- [x] Thực thi ghi nhận audit nhật ký hệ thống vào `logging/trace.jsonl` (chuẩn JSONL) và khai báo cấu hình AI vào `logging/metadata.json`.
+- [x] Thi hành toàn bộ chặng chạy thử và kiểm chứng:
+  - Verification 1 (Unit Test Suite): `python -m unittest discover -s tests -v` (100% PASS)
+  - Verification 2 (Batch Run): `python main.py` (Hoàn thành tạo 50 file trong `output/` thành công).

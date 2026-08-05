@@ -1,48 +1,64 @@
-# Implementation Plan: Payment Agent & Data Loader Support
+# Implementation Plan: Full Multi-Agent A2A E-commerce Investigation System
 
 ## Overview
-Xây dựng trọn gói module `Payment Agent` trong `agents/payment_agent.py` và phần hàm trợ giúp đọc file của `Data Loader` trong `utils/data_loader.py`, sử dụng ngôn ngữ Python 3.11 với thư viện chuẩn. Kế hoạch tuân thủ mô hình Test-Driven Development (TDD) và triển khai tăng dần (Incremental Implementation), đảm bảo tính toán tiền tệ bằng `Decimal`, giữ nguyên nguồn dữ liệu CSV không qua sửa đổi và trả ra Hợp đồng Dữ liệu (Contract) đúng theo tài liệu kiến trúc.
+Kế hoạch triển khai toàn bộ các agent nghiệp vụ trong hệ thống Multi-Agent A2A Olist theo phương pháp **Vertical Slicing & Test-Driven Development (TDD)**. Các mô-đun được xây dựng theo trật tự từ tầng nền tảng truy xuất dữ liệu $\to$ domain agents $\to$ policy/verifier agents $\to$ coordinator $\to$ batch integration, đảm bảo mỗi bước đều có thể thi hành kiểm chứng độc lập.
 
-## Architecture Decisions
-- **Thư viện chuẩn Python (Standard Library):** Dùng `csv.DictReader`, `decimal.Decimal`, `json` và `dataclasses`/`typing` nhằm đảm bảo khả năng tái lập 100%, không bị sai lệch kiểu làm tròn số của float và không gây phụ thuộc môi trường bên thứ ba.
-- **Cách ly nghiệp vụ Data Loader:** Trong `utils/data_loader.py` xây dựng lớp `OlistDataLoader` (hoặc các hàm đọc độc lập) giúp truy vấn danh sách bản ghi theo `order_id` cho 2 bảng `order_payments` và `order_items` mà không join bảng (tránh tích Descartes) và giữ nguyên toàn bộ định danh dạng `str`.
-- **Thiết kế định dạng lỗi Có Cấu Trúc (Structured Error Reporting):** Khi phát hiện lỗi vi phạm dữ liệu (trùng số thứ tự thanh toán, tiền âm, lỗi cú pháp tiền tệ), agent lập tức trả lại `AgentResult` với `status` phù hợp (`data_error`, `conflict`, `not_found`) cùng mảng `errors` chuẩn bị theo mô tả `ErrorDetail`.
+## Architecture Decisions & Principles
+1. **Financial Determinism:** Duy trì sử dụng `Decimal` và làm tròn 2 chữ số thập phân (`ROUND_HALF_UP`) trong mọi agent có tính tiền (`order_seller`, `policy`, `verifier`), đồng bộ 100% với `payment_agent`.
+2. **Anti-Cartesian Data Separation:** Nghiệp vụ tra cứu từ Olist CSV trong `OlistDataLoader` sẽ được mở rộng thêm bộ nhớ đệm `_orders_cache`, `_sellers_cache` và `_products_cache`, không join bảng thô.
+3. **Decoupled Handoffs:** Các Domain Agent (`OrderSeller`, `Payment`, `Delivery`) hoàn toàn độc lập, giao tiếp dưới phong bì hợp đồng `AgentTask` và trả về `AgentResult`.
+4. **Deterministic Policy Matching:** `Policy Agent` xử lý danh sách 6 rule tĩnh ưu tiên từ cao xuống thấp, không phỏng đoán bằng văn phong LLM.
+5. **Gated Output Writing:** Cánh cửa ghi vào thư mục `output/` thuộc về `Coordinator Agent` và chỉ được mở sau khi có `verdict: "PASS"` từ `Verifier Agent`.
 
-## Task List
+---
 
-### Phase 1: Foundation - Data Loader for Payment & Items
-- [ ] Task 1: Xây dựng cơ sở truy vấn `OlistDataLoader` cho Payment và Items trong `utils/data_loader.py` kèm unit tests trong `tests/test_data_loader.py`.
+## Roadmap & Vertical Slices
 
-### Checkpoint: Foundation
-- [ ] Lệnh kiểm chứng: `python -m unittest tests/test_data_loader.py -v` hoàn tất thành công.
-- [ ] Đảm bảo dữ liệu tải về giữ nguyên dạng string, không sửa đổi source CSV.
+```mermaid
+flowchart TD
+    Phase1[Phase 1: Expand DataLoader & OrderSeller Agent]
+    Phase2[Phase 2: Delivery Agent Logic]
+    Phase3[Phase 3: Policy Agent & Decision Tree]
+    Phase4[Phase 4: Verifier Agent 8-Axis Checks]
+    Phase5[Phase 5: Coordinator State Machine & Handoffs]
+    Phase6[Phase 6: Batch Pipeline main.py & 50 Cases Verification]
 
-### Phase 2: Core Features - Payment Agent Standard Reconciliation
-- [ ] Task 2: Triển khai lớp `PaymentAgent` trong `agents/payment_agent.py` xử lý trường hợp chuẩn: tính toán tổng tiền, đối soát tài chính (`difference_brl <= 0.10`), phát hiện chia nhỏ thanh toán (`payment_count >= 2`) và sinh ra chuẩn `AgentResult` với `facts`, `entity_candidates`, `evidence_candidates`.
-- [ ] Viết unit tests kiểm chứng các testcase thanh toán chuẩn trong `tests/test_payment_agent.py`.
+    Phase1 --> Phase2 --> Phase3 --> Phase4 --> Phase5 --> Phase6
+```
 
-### Checkpoint: Core Features
-- [ ] Lệnh kiểm chứng: `python -m unittest tests/test_payment_agent.py -v` hoàn tất thành công.
-- [ ] Các con số tiền tệ chính xác tuyệt đối ở kiểu số thập phân, làm tròn 2 chữ số theo `ROUND_HALF_UP`.
+### Phase 1: Expand Data Loader & Order-Seller Agent
+- Mở rộng `OlistDataLoader` với các hàm lấy order, seller, product và viết test cho tính năng mới.
+- Triển khai `OrderSellerAgent` tại `agents/order_seller_agent.py` và kiểm thử tự động tại `tests/test_order_seller_agent.py`.
+- **Checkpoint 1:** Kiểm tra tính tổng `item_total_brl` và `freight_total_brl`, xác định seller vi phạm thời hạn bàn giao (`handoff_after_limit`).
 
-### Phase 3: Polish & Edge Cases (Trường hợp biên & Lỗi vi phạm)
-- [ ] Task 3: Bổ sung logic xử lý toàn diện các trường hợp biên của Payment Agent:
-  - Order không có payment row nào -> trả `payments=[]`, totals = `0.00`, status `success` (không coi là lỗi, không tự gán/bịa payment ID).
-  - `payment_sequential` trùng lặp trong cùng order -> trả `status="data_error"`.
-  - Giá trị tiền không parse được hoặc âm bất thường -> trả `status="data_error"`.
-  - Mâu thuẫn tổng tiền kiểm tra chéo (khi có thông số đối chiếu gây xung đột từ Coordinator) -> trả `status="conflict"`.
-- [ ] Bổ sung các ca kiểm thử unit test cho edge cases vào `tests/test_payment_agent.py`.
+### Phase 2: Delivery Agent
+- Triển khai `DeliveryAgent` tại `agents/delivery_agent.py` và kiểm thử tự động tại `tests/test_delivery_agent.py`.
+- **Checkpoint 2:** Kiểm chứng phân chia trách nhiệm `attribution_candidate` (`seller`, `logistics_provider`, `none`, `not_applicable`, `unknown`).
 
-### Checkpoint: Complete
-- [ ] Toàn bộ unit tests chạy xanh (PASS): `python -m unittest discover -s tests -v`.
-- [ ] Mã nguồn đáp ứng toàn bộ các Tiêu chí Thành công (Success Criteria) đặt ra tại `specs/payment_agent_spec.md`.
-- [ ] Nghiệm thu với human trước khi bàn giao.
+### Phase 3: Policy Agent
+- Triển khai `PolicyAgent` tại `agents/policy_agent.py` và bộ test TDD `tests/test_policy_agent.py`.
+- **Checkpoint 3:** Kiểm tra 6 luật của `EC_POLICY_V1`, cờ `excluded_higher_priority_rules` và tính chính xác số tiền hoàn `recommended_refund_brl`.
+
+### Phase 4: Verifier Agent
+- Triển khai `VerifierAgent` tại `agents/verifier_agent.py` và bộ test TDD `tests/test_verifier_agent.py`.
+- **Checkpoint 4:** Kiểm tra 8 trục giám sát (`schema`, `identity`, `entities`, `evidence`, `financials`, `policy`, `limits`, `determinism`), xác minh cắt mảng tối đa 5 entity và 10 evidence.
+
+### Phase 5: Coordinator Agent
+- Triển khai `CoordinatorAgent` tại `agents/coordinator.py` và bộ test TDD `tests/test_coordinator.py`.
+- **Checkpoint 5:** Kiểm thử luồng quản lý trạng thái (`RECEIVED -> ... -> WRITTEN`), điều phối fan-out tới 3 domain agent, xử lý xung đột chéo (`DOMAIN_TOTAL_CONFLICT`), gửi Policy và xin cấp phép từ Verifier.
+
+### Phase 6: Full Batch Integration (`main.py`) & Audit Logs
+- Triển khai tệp thực thi chính `main.py` để quét và giải quyết trọn bộ 50 file từ `input/EC_001.json` tới `EC_050.json`.
+- Xuất kết quả vào `output/EC_001.json` - `output/EC_050.json`, ghi nhật ký giao ca vào `logging/trace.jsonl` và thông tin model/runtime vào `logging/metadata.json`.
+- **Checkpoint 6:** Chạy thực tiễn 50 cases và xác định 100% đạt trạng thái PASS.
+
+---
 
 ## Risks and Mitigations
-| Risk | Impact | Mitigation |
-|---|---|---|
-| Hiệu năng tra cứu file CSV 100k dòng lặp đi lặp lại có thể chậm | Low-Medium | Thêm bộ nhớ đệm (caching/index theo `order_id` trong bộ nhớ trong lần đọc đầu của DataLoader) mà không ghi hay chỉnh sửa file đĩa gốc. |
-| Sai lệch số thập phân do ép kiểu nhầm về float | High | Viết hàm helper chuẩn cho phép tính tiền: `Decimal(str(val)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)` và test nghiêm ngặt trong Unit Test. |
 
-## Open Questions
-- Không có open question; mọi thiết kế đã ăn khớp trọn vẹn với yêu cầu của tài liệu kiến trúc.
+| rủi ro | Mức độ | Chiến lược giảm thiểu (Mitigation) |
+| :--- | :--- | :--- |
+| **Xung đột làm tròn tiền BRL giữa OrderSeller và Payment** | Cao | Tất cả các agent đều nhập khẩu bộ tiện ích tính toán `Decimal` và cờ làm tròn `ROUND_HALF_UP`, tuyệt đối không tự ý dùng `float(a + b)`. |
+| **Bùng nổ bộ nhớ hoặc I/O khi chạy 50 cases liên tiếp** | Trung bình | `OlistDataLoader` sử dụng bộ đệm nhàn rỗi O(1) in-memory index; dữ liệu CSV chỉ đọc 1 lần duy nhất trong toàn chặng chạy batch. |
+| **Rò rỉ thông số trace vào file JSON nộp bài** | Cao | `CoordinatorAgent` dựng đối tượng `draft_output` sạch theo đúng hợp đồng mục 12, cách ly hoàn toàn với mảng log của `trace.jsonl`. |
+| **Sai lệch định dạng thời gian ISO-8601** | Tháp | So sánh chuỗi trực tiếp hoặc parse cẩn trọng theo chuẩn CSV Olist, không thực hiện chuyển đổi múi giờ tùy tiện. |

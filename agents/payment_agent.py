@@ -1,14 +1,22 @@
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
-from typing import Dict, Any, List, Set
+from typing import Dict, Any, List, Set, Optional
 from utils.data_loader import OlistDataLoader
+from utils.llm_client import LLMClient
+
+MODEL_NAME = "gemini-flash-lite-latest"
+PARAMETER_SIZE = "<= 10B (Flash-Lite Lightweight Agent Model)"
 
 class PaymentAgent:
     """
     Agent nghiệp vụ chịu trách nhiệm điều tra, tính toán và đối soát
     các khoản thanh toán của đơn hàng từ dataset Olist.
+    Tích hợp LLM hỗ trợ tổng hợp báo cáo (không thay thế phép tính xác định).
     """
-    def __init__(self, data_loader: OlistDataLoader):
+    def __init__(self, data_loader: OlistDataLoader, llm_client: Optional[Any] = None):
         self.data_loader = data_loader
+        self.llm = llm_client if llm_client is not None else LLMClient(default_model=MODEL_NAME)
+        self.model_name = MODEL_NAME
+        self.parameter_size = PARAMETER_SIZE
 
     def _quantize_brl(self, val: Decimal | str | float | int) -> Decimal:
         if not isinstance(val, Decimal):
@@ -23,6 +31,11 @@ class PaymentAgent:
             "case_id": task.get("case_id", ""),
             "order_id": task.get("order_id", ""),
             "agent_name": "payment_agent",
+            "model_metadata": {
+                "agent": "payment_agent",
+                "model": self.model_name,
+                "parameter_size": self.parameter_size
+            },
             "status": status,
             "facts": {},
             "entity_candidates": {"payment_ids": []},

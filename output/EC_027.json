@@ -1,0 +1,74 @@
+{
+  "contract_version": "1.0",
+  "run_id": "run_20260805_060514_70b7a1",
+  "correlation_id": "corr_EC_027_54bef0",
+  "case_id": "EC_027",
+  "order_id": "2f346d92b11fcc7c342b3392b174cf3b",
+  "status": "action_required",
+  "primary_issue": "unavailable_order_paid",
+  "policy_decision": {
+    "confidence_score": 1.0,
+    "confidence_explanation": "Đơn hàng unavailable đã thu tiền thanh toán",
+    "matched_rule_priority": 2,
+    "primary_issue": "unavailable_order_paid",
+    "case_status": "action_required",
+    "root_causes": [
+      "ORDER_UNAVAILABLE_AFTER_PAYMENT"
+    ],
+    "responsible_parties": [
+      {
+        "party_type": "platform",
+        "party_id": "OLIST_PLATFORM"
+      }
+    ],
+    "recommended_refund_brl": 74.7,
+    "currency": "BRL",
+    "resolution_actions": [
+      "issue_full_refund"
+    ],
+    "excluded_higher_priority_rules": [
+      {
+        "priority": 1,
+        "reason_code": "ORDER_STATUS_NOT_CANCELED"
+      }
+    ],
+    "selected_evidence_ids": [
+      "order:2f346d92b11fcc7c342b3392b174cf3b",
+      "payment:2f346d92b11fcc7c342b3392b174cf3b:1",
+      "policy:ORDER_UNAVAILABLE_AFTER_PAYMENT"
+    ]
+  },
+  "evidence": {
+    "entity_candidates": {
+      "order_ids": [
+        "2f346d92b11fcc7c342b3392b174cf3b"
+      ],
+      "seller_ids": [],
+      "item_ids": [],
+      "payment_ids": [
+        "2f346d92b11fcc7c342b3392b174cf3b:1"
+      ]
+    },
+    "evidence_candidates": [
+      "order:2f346d92b11fcc7c342b3392b174cf3b",
+      "payment:2f346d92b11fcc7c342b3392b174cf3b:1",
+      "policy:ORDER_UNAVAILABLE_AFTER_PAYMENT"
+    ]
+  },
+  "warnings": [],
+  "errors": [],
+  "verification": {
+    "verdict": "PASS",
+    "passed_checks": [
+      "schema",
+      "identity",
+      "entities",
+      "evidence",
+      "financials",
+      "policy",
+      "limits",
+      "determinism"
+    ],
+    "failed_checks": []
+  }
+}

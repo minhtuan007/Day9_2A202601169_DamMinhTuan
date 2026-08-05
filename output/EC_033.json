@@ -1,0 +1,86 @@
+{
+  "contract_version": "1.0",
+  "run_id": "run_20260805_060514_70b7a1",
+  "correlation_id": "corr_EC_033_767b41",
+  "case_id": "EC_033",
+  "order_id": "a5c8f3a11dcb9bd9b0acdfb8101dfdc8",
+  "status": "action_required",
+  "primary_issue": "late_delivery_seller",
+  "policy_decision": {
+    "confidence_score": 1.0,
+    "confidence_explanation": "Giao hàng sau dự kiến do seller giao bưu cục muộn",
+    "matched_rule_priority": 3,
+    "primary_issue": "late_delivery_seller",
+    "case_status": "action_required",
+    "root_causes": [
+      "SELLER_HANDOFF_AFTER_LIMIT"
+    ],
+    "responsible_parties": [
+      {
+        "party_type": "seller",
+        "party_id": "1025f0e2d44d7041d6cf58b6550e0bfa"
+      }
+    ],
+    "recommended_refund_brl": 18.72,
+    "currency": "BRL",
+    "resolution_actions": [
+      "refund_freight"
+    ],
+    "excluded_higher_priority_rules": [
+      {
+        "priority": 1,
+        "reason_code": "ORDER_STATUS_NOT_CANCELED"
+      },
+      {
+        "priority": 2,
+        "reason_code": "ORDER_STATUS_NOT_UNAVAILABLE"
+      }
+    ],
+    "selected_evidence_ids": [
+      "order:a5c8f3a11dcb9bd9b0acdfb8101dfdc8",
+      "item:a5c8f3a11dcb9bd9b0acdfb8101dfdc8:1",
+      "seller:1025f0e2d44d7041d6cf58b6550e0bfa",
+      "payment:a5c8f3a11dcb9bd9b0acdfb8101dfdc8:1",
+      "policy:SELLER_HANDOFF_AFTER_LIMIT"
+    ]
+  },
+  "evidence": {
+    "entity_candidates": {
+      "order_ids": [
+        "a5c8f3a11dcb9bd9b0acdfb8101dfdc8"
+      ],
+      "seller_ids": [
+        "1025f0e2d44d7041d6cf58b6550e0bfa"
+      ],
+      "item_ids": [
+        "a5c8f3a11dcb9bd9b0acdfb8101dfdc8:1"
+      ],
+      "payment_ids": [
+        "a5c8f3a11dcb9bd9b0acdfb8101dfdc8:1"
+      ]
+    },
+    "evidence_candidates": [
+      "order:a5c8f3a11dcb9bd9b0acdfb8101dfdc8",
+      "item:a5c8f3a11dcb9bd9b0acdfb8101dfdc8:1",
+      "seller:1025f0e2d44d7041d6cf58b6550e0bfa",
+      "payment:a5c8f3a11dcb9bd9b0acdfb8101dfdc8:1",
+      "policy:SELLER_HANDOFF_AFTER_LIMIT"
+    ]
+  },
+  "warnings": [],
+  "errors": [],
+  "verification": {
+    "verdict": "PASS",
+    "passed_checks": [
+      "schema",
+      "identity",
+      "entities",
+      "evidence",
+      "financials",
+      "policy",
+      "limits",
+      "determinism"
+    ],
+    "failed_checks": []
+  }
+}
